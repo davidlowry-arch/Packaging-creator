@@ -10,7 +10,9 @@ import subprocess
 import shutil
 import openpyxl
 
-spec = importlib.util.spec_from_file_location("pc", "packaging creator.py")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+creator_path = os.path.join(BASE_DIR, "packaging creator.py")
+spec = importlib.util.spec_from_file_location("pc", creator_path)
 pc = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(pc)
 
@@ -27,7 +29,8 @@ class PackagingApp:
         self.root.title("Packaging Creator")
         self.root.geometry("1400x800")
         
-        self.excel_path = r"C:\Users\dclow\Desktop\packaging info.xlsx"
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        self.excel_path = os.path.join(BASE_DIR, "packaging info.xlsx")
         self.cell_colors = {}
         self.row_tags = {}
         self.load_excel_data()
@@ -769,14 +772,22 @@ class PackagingApp:
             return
             
         try:
+            from datetime import datetime
+            
             rows = 4 if self.labels_per_page.get() == 12 else 3
-            output_file = "Final_Packaging.pdf"
+            
+            # Generate a timestamped filename
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            output_file = f"Final_Packaging_{timestamp}.pdf"
             
             # Generate the PDF with the accumulated jobs list
             pc.generate_pdf(
                 self.pdf_jobs, 
                 output_filename=output_file, 
                 rows_per_page=rows, 
+                # Note: The global zoom/nudge variables here are passed as fallbacks,
+                # but the creator script will now correctly override them with the 
+                # job-specific snapshots we saved!
                 img_v_offset=self.img_v_offset,
                 img_zoom=self.img_zoom
             )

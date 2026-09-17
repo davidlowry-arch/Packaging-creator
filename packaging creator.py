@@ -18,7 +18,8 @@ from datetime import datetime
 LABEL_WIDTH = 63 * mm
 # --- Configuration & Constants ---
 COLS = 3  
-ASSETS_DIR = r"C:\Users\dclow\Desktop\assets"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ASSETS_DIR = os.path.join(BASE_DIR, "assets")
 
 # Set width to exactly 1/3 of A4 width
 LABEL_WIDTH = A4[0] / COLS  
