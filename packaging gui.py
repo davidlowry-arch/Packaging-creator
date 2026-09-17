@@ -776,25 +776,23 @@ class PackagingApp:
             
             rows = 4 if self.labels_per_page.get() == 12 else 3
             
-            # Generate a timestamped filename
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            output_file = f"Final_Packaging_{timestamp}.pdf"
+            # Target the Desktop dynamically regardless of the current machine/user
+            desktop_dir = os.path.join(os.path.expanduser("~"), "Desktop")
             
-            # Generate the PDF with the accumulated jobs list
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"Final_Packaging_{timestamp}.pdf"
+            output_file = os.path.join(desktop_dir, filename)
+            
             pc.generate_pdf(
                 self.pdf_jobs, 
                 output_filename=output_file, 
                 rows_per_page=rows, 
-                # Note: The global zoom/nudge variables here are passed as fallbacks,
-                # but the creator script will now correctly override them with the 
-                # job-specific snapshots we saved!
                 img_v_offset=self.img_v_offset,
                 img_zoom=self.img_zoom
             )
             
-            messagebox.showinfo("Success", f"Generated {output_file} successfully with {self.total_queued_labels} total labels!")
+            messagebox.showinfo("Success", f"Generated {filename} on your Desktop with {self.total_queued_labels} total labels!")
             
-            # Reset the queue after successful generation
             self.pdf_jobs = []
             self.total_queued_labels = 0
             self.lbl_queue_status.config(text="Queued labels: 0")
